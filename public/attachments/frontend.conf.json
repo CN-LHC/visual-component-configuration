@@ -1,0 +1,17 @@
+{
+  "API_LIST": [{
+    "label": "测试",
+    "options": [{
+      "label": "FinanceValue",
+      "des": "测试 融资余额 融券余额",
+      "value": "https://dtdataapi.wedengta.com/FinanceValue/FinanceValue"
+    }]
+  }, {
+    "label": "行情",
+    "options": [{
+      "label": "day_qt_performance",
+      "des": "日k、30日、60日、90日",
+      "value": "https://dtdataapi.wedengta.com/FinanceValue/day_qt_performance"
+    }]
+  }]
+}
