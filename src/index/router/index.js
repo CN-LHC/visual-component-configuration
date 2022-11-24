@@ -1,6 +1,14 @@
+/*
+ * @Author: liuhanchuan 
+ * @Date: 2022-11-23 15:05:55 
+ * @Last Modified by:   liuhanchuan 
+ * @Last Modified time: 2022-11-23 15:05:55 
+ * 路由配置
+ */
+
 import Vue from "vue";
 import VueRouter from "vue-router";
-
+import { getCookie } from "@/utils/utils";
 Vue.use(VueRouter);
 
 const routes = [
@@ -65,7 +73,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   //根据字段判断是否路由过滤
   if (to.matched.some((record) => record.meta.auth)) {
-    if (localStorage.getItem('userInfo')) {
+    if (getCookie('token')) {
       next();
     } else {
       //防止无限循环

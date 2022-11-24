@@ -27,12 +27,12 @@ let plugins = [
   new MonacoEditorWebpackPlugin()
 ];
 
-const publicPath = process.env.NODE_ENV === "production" ? "/h5" : "/";
+// const publicPath = process.env.NODE_ENV === "production" ? "/h5" : "/";
 
 module.exports = {
   pages: pagesObj, //多入口
   lintOnSave: false,
-  publicPath: publicPath,
+  // publicPath: publicPath,
   configureWebpack: {
     plugins: plugins,
   },

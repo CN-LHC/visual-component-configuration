@@ -1,3 +1,11 @@
+/*
+ * @Author: liuhanchuan 
+ * @Date: 2022-11-23 15:06:13 
+ * @Last Modified by:   liuhanchuan 
+ * @Last Modified time: 2022-11-23 15:06:13 
+ * 网站头部组件
+ */
+
 <template>
   <div class="header">
     <div class="logo">
@@ -5,7 +13,7 @@
       <img src="../../assets/logo_title.svg" alt="logo_title">
     </div>
     <div class="account">
-      <span>{{ userInfo.username || '未命名' }}</span>
+      <span>{{ userInfo.userName || '未命名' }}</span>
       <el-dropdown placement="bottom-start" @command="handleCommand">
         <div class="head-photo">
           <img src="../../assets/user.svg" alt="user">
@@ -22,6 +30,7 @@
 </template>
 <script>
 // import { mapGetters } from "vuex";
+import { delCookie } from "@/utils/utils";
 export default {
   name: "HeaderComponent",
   data: function() {
@@ -42,9 +51,6 @@ export default {
         this.userInfo = JSON.parse(userInfo)
       }
     },
-    // goHome() {
-    //   this.$router.push({ path: '/' })
-    // },
     //菜单命令
     handleCommand(command) {
       if (command == "accountInfo") {
@@ -53,6 +59,9 @@ export default {
           message: "敬请期待"
         });
       } else {
+        // 清空token信息和用户信息
+        delCookie('token')
+        localStorage.clear();
         this.$message({
           type: "success",
           message: "您已退出登录，即将回到登录页！"
@@ -61,7 +70,6 @@ export default {
           this.$router.push({ path: "/login" });
           // this.$store.commit('user/setUserInfo', {});
           this.userInfo = {}
-          localStorage.clear();
         }, 1000);
       }
     },

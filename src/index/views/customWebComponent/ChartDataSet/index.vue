@@ -1,3 +1,11 @@
+/*
+ * @Author: liuhanchuan 
+ * @Date: 2022-11-23 15:05:24 
+ * @Last Modified by:   liuhanchuan 
+ * @Last Modified time: 2022-11-23 15:05:24 
+ * 图表数据来源配置
+ */
+
 <template>
     <div class="chart_data_set">
         <div class="data_api_select">
@@ -54,7 +62,7 @@ export default {
         SelectKeys
     },
     async created() {
-        this.requestAPI = debounce(this.requestAPI, 1000)
+        this.selectCurrentKeys = debounce(this.selectCurrentKeys, 700)
         this.getApiList().then((data) => {
             // 默认值
             if (this.dataApiConfig) {
@@ -77,12 +85,17 @@ export default {
     watch: {
         paramObj:{
             handler(newVal,oldVal){
-                this.requestAPI()
+                if (this.resultArr.length === 0) {
+                    this.requestAPI()
+                } else {
+                    this.selectCurrentKeys()
+                }
             },
             deep:true,
         },
     },
     methods: {
+        // 获取接口
         getApiList() {
             return new Promise((resolve, reject) => {
                 this.API.getApiList({
@@ -97,6 +110,7 @@ export default {
                 })
             })
         },
+        // 根据所选接口的不同，设置可选接口参数和默认值
         selectAPI() {
             this.resultArr = []
             let API_MSG = this.apiList.filter(item => item.id === this.currentAPI)[0]
@@ -114,6 +128,7 @@ export default {
             }
             this.selectCurrentKeys([])
         },
+        // 获取数图可配置参数
         requestAPI() {
             let API_MSG = this.apiList.filter(item => item.id === this.currentAPI)[0]
             requestHttp({
@@ -127,14 +142,18 @@ export default {
                 }
             })
         },
+        // 设置g2-chart属性data-api-config
         selectCurrentKeys(value) {
             let API_MSG = this.apiList.filter(item => item.id === this.currentAPI)[0]
+            if (value) {
+                this.selectArr = [...value]
+            }
             this.$emit('setDataApiConfig', JSON.stringify({
                 url: API_MSG.api_url,
                 method: API_MSG.api_method,
                 contentType: JSON.parse(API_MSG.api_header)['Content-Type'],
                 body: this.paramObj,
-                selectKeys: value
+                selectKeys: value || this.selectArr
             }))
         }
     },

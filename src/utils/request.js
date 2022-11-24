@@ -35,7 +35,7 @@ request.interceptors.response.use(response => {
   if (status != 200) {
     return Promise.reject(response);
   }
-  if (response.data?.msg === 'success') {
+  if (response.data?.msg === 'success' || response.data?.code === 200) {
     return response.data.data
   } else {
     Message.error(response.data?.message || '服务器错误提示')

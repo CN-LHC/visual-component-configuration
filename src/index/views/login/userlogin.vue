@@ -1,3 +1,10 @@
+/*
+ * @Author: liuhanchuan 
+ * @Date: 2022-11-23 15:03:35 
+ * @Last Modified by: liuhanchuan
+ * @Last Modified time: 2022-11-23 17:20:37
+ * 用户账号登录
+ */
 <template>
   <el-form
     class="login-form"
@@ -68,7 +75,8 @@
 </template>
 
 <script>
-import { randomLenNum } from "@/utils/utils";
+import { randomLenNum, setCookie } from "@/utils/utils";
+import md5 from "md5"
 export default {
   name: "userlogin",
   data() {
@@ -77,14 +85,13 @@ export default {
         username: "",
         password: "",
         code: "",
-        randomStr: ""
       },
       checked: false,
       code: {
         src: "/code",
         value: "",
         len: 4,
-        type: "text"
+        type: "image"
       },
       loginRules: {
         username: [
@@ -107,13 +114,15 @@ export default {
   mounted() {},
   props: [],
   methods: {
-    refreshCode() {
+    async refreshCode() {
       this.loginForm.code = "";
-      this.loginForm.randomStr = randomLenNum(this.code.len, true);
-
-      this.code.type === "text"
-        ? (this.code.value = randomLenNum(this.code.len))
-        : (this.code.src = `http://videoeditor.dengtacj.cn:55561/api/code?randomStr=${this.loginForm.randomStr}`);
+      // this.loginForm.randomStr = randomLenNum(this.code.len, true);
+      // this.code.type === "text"
+      //   ? (this.code.value = randomLenNum(this.code.len))
+      //   : (this.code.src = `http://videoeditor.dengtacj.cn:55561/api/code?randomStr=${this.loginForm.randomStr}`);
+      let data = await this.API.pic()
+      this.code.src = data.image
+      this.code.value = data.uuid
     },
     showPassword() {
       this.passwordType == ""
@@ -121,12 +130,32 @@ export default {
         : (this.passwordType = "");
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          // this.$store.commit('user/setUserInfo', this.loginForm)
-          window.localStorage.setItem('userInfo', JSON.stringify(this.loginForm))
-          this.$bus.$emit('login_in')
-          this.$router.push({ path: '/' })
+          // 1校验验证码，2登录，3通过token获取用户信息
+          this.API.verify({
+            code: this.loginForm.code,
+            uuid: this.code.value,
+          }).then(async () => {
+            let token = await this.API.login({
+              code: md5(this.loginForm.password),
+              key: this.loginForm.username,
+              loginWay: 1,
+              serverName: 'shutu'
+            })
+            let userInfo = await this.API.token({ token })
+            // this.$store.commit('user/setUserInfo', userInfo)
+            if (userInfo.serverName === 'shutu') {
+              // 设置token信息
+              setCookie('token', token, 7)
+              // 设置用户信息
+              window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
+              this.$bus.$emit('login_in')
+              this.$router.push({ path: '/' })
+            } else {
+              this.$message.error('当前用户无访问权限，请联系管理员!')
+            }
+          })
         }
       });
     }

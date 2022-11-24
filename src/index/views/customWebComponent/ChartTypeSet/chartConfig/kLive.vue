@@ -1,5 +1,20 @@
+/*
+ * @Author: liuhanchuan 
+ * @Date: 2022-11-23 15:04:50 
+ * @Last Modified by:   liuhanchuan 
+ * @Last Modified time: 2022-11-23 15:04:50 
+ * k线图配置
+ */
 <template>
     <el-collapse v-model="activeNames">
+        <el-collapse-item title="基础属性配置" name="basics">
+            <div class="config_box">
+                <div class="scaleName">
+                    <h3>边距</h3>
+                    <el-input-number v-model="kLineConfig.basicsPadding" size="small" :min="0" label="描述文字"></el-input-number>
+                </div>
+            </div>
+        </el-collapse-item>
         <el-collapse-item title="x轴配置" name="xAxis">
             <div class="config_box">
                 <div class="scaleName">
@@ -88,16 +103,21 @@ import { debounce } from '../../../../../utils/utils'
       return {
         activeNames: ['base'],
         kLineConfig: {
+            // x轴配置
             xAxisVisible: false,
             xScaleTickCount: 0,
             xAxisLabelSize: 14,
             xAxisLabelColor: '#606266',
+            // y轴配置
             yAxisVisible: false,
             yScaleTickCount: 0,
             yAxisLabelSize: 14,
             yAxisLabelColor: '#606266',
+            // 业务属性
             riseColor: '#f04864',
             fallColor: '#2fc25b',
+            // 基础属性
+            basicsPadding: 0,
         }
       };
     },

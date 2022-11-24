@@ -2,7 +2,7 @@
  * @Author: liuhanchuan 
  * @Date: 2022-11-22 09:11:11 
  * @Last Modified by: liuhanchuan
- * @Last Modified time: 2022-11-22 13:45:07
+ * @Last Modified time: 2022-11-23 10:20:24
  * 数图新建、编辑
  */
 
@@ -32,7 +32,7 @@
                     <div class="chart_container">
                         <g2-chart
                             ref="g2Chart"
-                            :data-chart-type="dataChartType"
+                            :data-chart-type='dataChartType'
                             :data-api-config='dataApiConfig'
                             :data-chart-config='dataChartConfig'
                         ></g2-chart>
@@ -72,7 +72,7 @@ export default {
   },
   data() {
     return {
-      id: null, // 编辑图表
+      id: null, // 新增|id == null，编辑|id !== null
       isDragging: false, //拖动侧栏时，需要让iframe覆盖一层div，避免拖动bug
       currentLeft: 1060, //从左0位置往右多少像素
       // g2-chart属性
@@ -150,8 +150,8 @@ export default {
     // 获取图表渲染代码
     getChartCode() {
         this.$nextTick(() => {
-            this.$refs.chartCode.innerText = `${this.$refs.g2Chart.outerHTML.replaceAll(/&quot;/ig, "\"")}
-            <script src="/index.js" />`
+            this.$refs.chartCode.innerText = `${this.$refs.g2Chart.outerHTML.replaceAll(/&quot;/ig, "\"").replaceAll(/\"\{/ig, "\'\{").replaceAll(/\}\"/ig, "\}\'")}
+            <script src="http://192.168.9.52/yangwu/dengta-components/-/raw/master/lib/index.js" />`
         })
     },
     // 设置图表属性
@@ -176,6 +176,7 @@ export default {
     submitConfig(value) {
       if (this.dataApiConfig && this.dataChartType) {
         if (this.id !== null) {
+          // 编辑
           this.API.chartUpdate({
             id: this.id,
             chartType: this.dataChartType,
@@ -190,6 +191,7 @@ export default {
             this.$message.error(`保存配置失败${error}`)
           })
         } else {
+          // 新增
           this.API.chartAdd({
             chartType: this.dataChartType,
             dataApiConfig: this.dataApiConfig,

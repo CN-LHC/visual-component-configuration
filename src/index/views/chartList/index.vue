@@ -80,24 +80,24 @@ export default {
     },
     searchKeyword() {
       this.currentPage = 1
-      this.list = []
-      this.$nextTick(() => {
-        this.getList()
-      })
+      this.getList()
     },
     getList() {
       this.loading = true
-      this.API.getChartList({
-        page: this.currentPage,
-        size: this.pageSize,
-        searchText: this.keyword || '',
-      }).then((data) => {
-        this.list = data.list || []
-        this.total = data.total
-        this.loading = false
-      }).catch((error) => {
-        this.$message.error(`获取列表失败${error}`)
-        this.loading = false
+      this.list = []
+      this.$nextTick(() => {
+        this.API.getChartList({
+          page: this.currentPage,
+          size: this.pageSize,
+          searchText: this.keyword || '',
+        }).then((data) => {
+          this.list = data.list || []
+          this.total = data.total
+          this.loading = false
+        }).catch((error) => {
+          this.$message.error(`获取列表失败${error}`)
+          this.loading = false
+        })
       })
     },
     handleSizeChange(pageSize) {

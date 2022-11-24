@@ -1,7 +1,45 @@
+/*
+ * @Author: liuhanchuan 
+ * @Date: 2022-11-23 15:06:35 
+ * @Last Modified by: liuhanchuan
+ * @Last Modified time: 2022-11-23 15:07:02
+ * API管理
+ */
+
 import request from "@/utils/request";
 
 //接口管理
 export default {
+  // 登陆相关接口
+
+  login: (params) => {
+    return request({
+      url: 'https://gildata.wedengta.com/account_centert/user/login',
+      method: 'post',
+      data: params
+    })
+  },
+  token: (params) => {
+    return request({
+      url: 'https://gildata.wedengta.com/account_centert/user/tokenVerify',
+      method: 'get',
+      params,
+    })
+  },
+  pic: (params = {}) => {
+    return request({
+      url: 'https://gildata.wedengta.com/account_centert/verify/pic/captcha',
+      method: 'get',
+      params,
+    })
+  },
+  verify: (params) => {
+    return request({
+      url: 'https://gildata.wedengta.com/account_centert/verify/pic/verify',
+      method: 'post',
+      data: params
+    })
+  },
   // ------------数据管理相关接口-----------------
 
   // 新增接口配置

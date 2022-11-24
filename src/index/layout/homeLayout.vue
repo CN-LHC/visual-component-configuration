@@ -9,11 +9,11 @@
       text-color="#fff"
       active-text-color="#3BD5B3">
       <el-menu-item index="api">
-        <i class="el-icon-menu"></i>
+        <i class="el-icon-coin"></i>
         <span slot="title">数据管理</span>
       </el-menu-item>
       <el-menu-item index="list">
-        <i class="el-icon-menu"></i>
+        <i class="el-icon-data-line"></i>
         <span slot="title">组件管理</span>
       </el-menu-item>
     </el-menu>
