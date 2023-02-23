@@ -12,17 +12,21 @@
                 </el-radio-group>
                 <div class="componnet_msg">
                   <DragResizeBox v-show="current_select === '组件'" @resizeChart="resizeChart">
-                    <g2-chart
-                        ref="g2Chart"
-                        :data-chart-type='dataChartType'
-                        :data-api-config='dataApiConfig'
-                        :data-chart-config='dataChartConfig'
-                    ></g2-chart>
+                    <div id="customComponent" style="width: 100%; height: 100%">
+                      <g2-chart
+                          ref="g2Chart"
+                          :data-chart-type='dataChartType'
+                          :data-api-config='dataApiConfig'
+                          :data-chart-config='dataChartConfig'
+                      ></g2-chart>
+                    </div>
                   </DragResizeBox>
                   <div class="code_box" v-show="current_select === '代码'" ref="chartCode"></div>
                 </div>
                 <div class="operation_configure">
-                  <el-button type="default">下载</el-button>
+                  <el-button @click="download_png" :loading="image_loading">PNG下载</el-button>
+                  <el-button @click="downLoad_webm" :loading="video_loading">WEBM下载</el-button>
+                  <el-button @click="downLoad_gif" :loading="gif_loading">GIF下载</el-button>
                 </div>
             </div>
             <div class="right">
@@ -37,6 +41,7 @@ import ChartDataSet from "./ChartDataSet/index.vue"
 import ChartConfigSet from "./ChartConfigSet/index.vue"
 import ComponentMsgDialog from './ComponentMsgDialog.vue'
 import DragResizeBox from './dragResizeBox.vue'
+import { downLoadImg, htmltoVideo, generateUUID, htmltoGif } from '@/utils/utils'
 export default {
   name: "Workbench-Home",
   components: {
@@ -59,6 +64,9 @@ export default {
       dataChartConfig: '',
       // 代码 标签
       current_select: '组件',
+      image_loading: false,
+      video_loading: false,
+      gif_loading: false,
     };
   },
   created() {
@@ -94,7 +102,45 @@ export default {
       this.dataApiConfig = config
       this.getChartCode()
     },
-   
+    download_png() {
+      this.image_loading = true
+      html2canvas(document.getElementById('customComponent')).then((canvas) => {
+          let src = canvas.toDataURL("image/png")
+          downLoadImg(generateUUID(), src, () => {
+              this.image_loading = false
+          })
+      })
+    },
+    // 通过不同方式让svg和canvas生成视频
+    downLoad_webm() {
+      this.video_loading = true
+      let event = new CustomEvent('resizeChart');
+      this.$refs.g2Chart.dispatchEvent(event);
+      this.$refs.g2Chart.addEventListener('renderChart', () => {
+          let canvas = this.$refs.g2Chart.getElementsByTagName('canvas')[0]
+          if (canvas) {
+              htmltoVideo(canvas, 5000, () => {
+                  this.video_loading = false
+              })
+          } else {
+              let elementToCustom = document.getElementById('customComponent'); // 录制区域
+              htmltoVideo(elementToCustom, 5000, () => {
+                  this.video_loading = false
+              })
+          }
+      }, { once: true })
+    },
+    downLoad_gif() {
+      this.gif_loading = true
+      let event = new CustomEvent('resizeChart');
+      this.$refs.g2Chart.dispatchEvent(event);
+      this.$refs.g2Chart.addEventListener('renderChart', () => {
+          let elementToCustom = document.getElementById('customComponent'); // 录制区域
+          htmltoGif(elementToCustom, 5000, () => {
+              this.gif_loading = false
+          })
+      }, { once: true })
+    }
   },
 };
 </script>
