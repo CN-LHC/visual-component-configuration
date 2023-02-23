@@ -1,84 +1,160 @@
-export function generateUUID() {
-  var d = new Date().getTime();
-  if (window.performance && typeof window.performance.now === "function") {
-    d += performance.now(); //use high-precision timer if available
-  }
-  var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-    /[xy]/g,
-    function (c) {
-      var r = (d + Math.random() * 16) % 16 | 0;
-      d = Math.floor(d / 16);
-      return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
+// 将图片获取到转化成base64下载
+export function downLoadImg(downloadName, url, callback) {
+  const tag = document.createElement("a");
+  // 此属性的值就是下载时图片的名称，注意，名称中不能有半角点，否则下载时后缀名会错误
+  tag.setAttribute("download", downloadName);
+  if (url.indexOf('data:image') !== -1) {
+    tag.href = url
+    tag.click();
+    if (callback) {
+      callback()
     }
-  );
-  return uuid;
-}
-/*添加cookie*/
-export function setCookie(cname,cvalue,exdays){
-  var d = new Date();
-  d.setTime(d.getTime()+(exdays*24*60*60*1000));
-  var expires = "expires="+d.toGMTString();
-  document.cookie = cname+"="+cvalue+"; "+expires;
-}
-/*获取cookie*/
-export function getCookie(cname){
-  var name = cname + "=";
-  var ca = document.cookie.split(';');
-  for(var i=0; i<ca.length; i++) {
-      var c = ca[i].trim();
-      if (c.indexOf(name)==0) { return c.substring(name.length,c.length); }
-  }
-  return "";
-}
-/*删除cookie*/
-export function delCookie(name, path, domain, secure) {
-  if (getCookie(name)) {
-    var expires = new Date();
-    expires.setTime(expires.getTime() + -10 * 1000);
-    domain = domain ? domain : "";
-    path = path ? path : "/";
-    var newCookie =
-      escape(name) +
-      "=" +
-      escape("") +
-      (expires ? "; expires=" + expires.toGMTString() : "") +
-      "; path=" +
-      path +
-      (domain ? "; domain=" + domain : "") +
-      (secure ? "; secure" : "");
-    document.cookie = newCookie;
+  } else {
+    const image = new Image();
+    // 设置 image 的 url, 添加时间戳，防止浏览器缓存图片
+    image.src = url + "?time=" + new Date().getTime();
+    //重要，设置 crossOrigin 属性，否则图片跨域会报错
+    image.setAttribute("crossOrigin", "Anonymous");
+    // 图片未加载完成时操作会报错
+    image.onload = () => {
+      tag.href = getImageDataURL(image);
+      tag.click();
+      if (callback) {
+        callback()
+      }
+    };
   }
 }
-/*异步等待一段时间*/
-export function sleep(seconds) {
-  return new Promise((resolve, reject) => {
+export function downLoadFile(downloadName, url) {
+  const tag = document.createElement("a");
+  // 此属性的值就是下载时图片的名称，注意，名称中不能有半角点，否则下载时后缀名会错误
+  tag.setAttribute("download", downloadName);
+  tag.href = url
+  tag.click();
+}
+export function htmltoVideo(elementToCustom, time, callback) {
+  if (elementToCustom?.captureStream) {
+    let stream = elementToCustom.captureStream()
+    let recorder = new MediaRecorder(stream, { mimeType: 'video/webm'});
+    const data = []
+    recorder.ondataavailable = function(event) {
+        if (event.data && event.data.size) {
+            data.push(event.data);
+        }
+    }
+    recorder.onstop = function() {
+        var blob = new Blob(data, {
+            type: "video/webm"
+        });
+        downLoadFile(generateUUID(), URL.createObjectURL(blob))
+    }
+    recorder.start()
     setTimeout(() => {
-      resolve();
-    }, seconds);
-  });
+        recorder.stop();
+        if (callback) {
+          callback()
+        }
+    }, 5000);
+  } else {
+    let canvas2d = document.createElement('canvas')
+    let context = canvas2d.getContext('2d');
+    canvas2d.width = elementToCustom.clientWidth;
+    canvas2d.height = elementToCustom.clientHeight;
+    let isStoppedRecording = false;
+    (function looper() {
+        html2canvas(elementToCustom).then(function(canvas) {
+            context.clearRect(0, 0, canvas2d.width, canvas2d.height);
+            context.drawImage(canvas, 0, 0, canvas2d.width, canvas2d.height);
+            if(isStoppedRecording) {
+                return;
+            }
+            requestAnimationFrame(looper);
+        });
+    })();
+
+    let recorder = new RecordRTC(canvas2d, {
+        type: 'canvas'
+    });
+    recorder.startRecording();
+    // 录制时间
+    setTimeout(() => {
+        recorder.stopRecording(function() {
+            isStoppedRecording = true;
+            let blob = recorder.getBlob();
+            downLoadFile(generateUUID(), URL.createObjectURL(blob))
+        });
+        if (callback) {
+          callback()
+        }
+    }, time);
+  }
 }
-/**
- * 生成随机len位数字
- */
- export const randomLenNum = (len, date) => {
-  let random = "";
-  random = Math.ceil(Math.random() * 100000000000000)
-    .toString()
-    .substr(0, len ? len : 4);
-  if (date) random = random + Date.now();
-  return random;
-};
-//防抖
-export function debounce(fn, delay = 500) {
-  let timer;
-  return function () {
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(() => {
-      fn.apply(this, arguments);
-      timer = null;
-    }, delay);
+export async function htmltoGif(elementToCustom, time, callback) {
+  let canvas2d = document.createElement('canvas')
+    let context = canvas2d.getContext('2d');
+    canvas2d.width = elementToCustom.clientWidth;
+    canvas2d.height = elementToCustom.clientHeight;
+    let isStoppedRecording = false;
+    let gif = new GIF({
+      quality: 10, // gif 清晰度，越低越清晰
+      workerScript: '/gif.worker.js',
+      debug: true, // 开启调试模式
+    });
+    (function looper() {
+        html2canvas(elementToCustom).then(function(canvas) {
+            context.clearRect(0, 0, canvas2d.width, canvas2d.height);
+            context.drawImage(canvas, 0, 0, canvas2d.width, canvas2d.height);
+            if(isStoppedRecording) {
+                return;
+            }
+            // 将canvas节点追加到gif帧中，delay 是每一帧的时间间隔
+            let image = new Image();
+            image.src = canvas2d.toDataURL("image/png");
+            image.onload = () => {
+              gif.addFrame(image, {delay: 100});
+            }
+            requestAnimationFrame(looper);
+        });
+    })();
+    // 监听渲染完毕，并输出 gif 地址
+    gif.on('finished', function(blob) {
+      const url = URL.createObjectURL(blob);
+      downLoadFile(generateUUID(), url)
+      if (callback) {
+        callback()
+      }
+    });
+    setTimeout(() => {
+      isStoppedRecording = true;
+      // 将每一帧渲染成一张完成的gif
+      gif.render();
+    }, time);
+}
+// 裁剪image
+export function clipImage(url) {
+  let image = new Image();
+  image.src = url;
+  image.onload = () => {
+      const width = 750
+      const height = 500
+      const new_canvas = document.createElement("canvas");
+      new_canvas.width = width;
+      new_canvas.height = height;
+      const ctx = new_canvas.getContext("2d");
+      // 裁剪
+      ctx.drawImage(image, 56, 40, width, height, 0, 0, width, height);
+      // 获取base64
+      return new_canvas.toDataURL('images/png')
+      // 获取blob
+      // new_canvas.toBlob((blob) => {
+      //     let file = new File([blob], `测试.png`)
+      //     return file
+      //     let formData = new FormData()
+      //     formData.append('file', file)
+      // })
+  };
+  image.onerror = () => {
+      reject('图片加载失败')
   };
 }
 export function requestHttp (apiConfig) {

@@ -6,7 +6,7 @@
 
 <style lang="less">
 @import "../assets/css/app.less";
-
+@import "../assets/css/root.css";
 nav {
   padding: 30px;
 

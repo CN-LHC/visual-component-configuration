@@ -2,16 +2,20 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import ElementUI from "element-ui";
-import 'element-ui/lib/theme-chalk/index.css'
 
-Vue.use(ElementUI);
+import infiniteScroll from "vue-infinite-scroll"
+import element from './element/index'
+// import auth from './instruct/auth'
+
+Vue.use(infiniteScroll);
+Vue.use(element)
+// Vue.use(auth)
 
 Vue.config.productionTip = false;
+
+// 自定义组件注册
 Vue.config.ignoredElements = ['g2-chart'];
-// API
-import API from "@/api/api";
-Vue.prototype.API = API;
+
 // moment
 import moment from "moment";
 import "moment/locale/zh-cn";

@@ -1,64 +1,30 @@
 /*
  * @Author: liuhanchuan 
  * @Date: 2022-11-23 15:05:55 
- * @Last Modified by:   liuhanchuan 
- * @Last Modified time: 2022-11-23 15:05:55 
+ * @Last Modified by: liuhanchuan
+ * @Last Modified time: 2023-02-23 15:41:37
  * 路由配置
  */
 
 import Vue from "vue";
 import VueRouter from "vue-router";
-import { getCookie } from "@/utils/utils";
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "",
+    name: "client-layout",
     meta: { auth: false },
-    redirect: "/list",
+    redirect: "/shutu-admin-configuration-component",
     component: () => import('../layout/basicLayout.vue'),
     children: [
       {
-        path: "/login",
-        name: "登录页",
-        meta: {
-          auth: false,
-        },
-        component: () => import("../views/login/index.vue"),
-      },
-      {
-        path: "/home",
-        name: "home",
-        meta: { auth: true },
-        redirect: '/list', // 重定向到互动视频
-        component: () => import('../layout/homeLayout.vue'),
-        children: [
-          {
-            path: "/api",
-            name: "api列表",
-            meta: {
-              auth: true,
-            },
-            component: () => import("../views/apiList/index.vue"),
-          },
-          {
-            path: "/list",
-            name: "组件列表",
-            meta: {
-              auth: true,
-            },
-            component: () => import("../views/chartList/index.vue"),
-          },
-        ],
-      },
-      {
-        path: "/customComponent",
-        name: "自定义组件",
+        path: "/shutu-admin-configuration-component",
+        name: "配置数图",
         meta: {
           auth: true,
         },
-        component: () => import("../views/customWebComponent/index.vue"),
+        component: () => import("../views/configurationComponent/index.vue"),
       },
     ],
   },
@@ -73,18 +39,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   //根据字段判断是否路由过滤
   if (to.matched.some((record) => record.meta.auth)) {
-    if (getCookie('token')) {
-      next();
-    } else {
-      //防止无限循环
-      if (to.name === "login") {
-        next();
-        return;
-      }
-      next({
-        path: "/login",
-      });
-    }
+    next();
   } else {
     // 当输入不存在的页面地址时候，返回首页
     if (to.matched.length > 0) {

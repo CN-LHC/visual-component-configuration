@@ -1,0 +1,8 @@
+/* 系统主题色 */
+:root {
+    --main-color: #3BD5B3;
+    --main-color-hover: #20C6A1;
+    --main-font-color: #fff;
+    --box-bg-color: #2B323C;
+    --input-bg-color: #3E4650;
+  }

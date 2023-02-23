@@ -1,16 +1,56 @@
-## vue2的坑
-由于vuecli升级成4.5了，默认安装less-loader会装到10,版本过高，需要手动降版本 npm i -D less-loader@7.0  
-否则一直提示 syntax error typeerror this getoptions is not a function
+#### 数图（灯塔财经旗下数据服务平台说明）
+
+##### 关键功能实现说明：
+
+1. 可视化图表渲染依赖于自定义组件库[dengta-components](https://www.npmjs.com/package/dengta-components)。
+2. 首页拖动使用了[vue-grid-layout](https://github.com/jbaysolutions/vue-grid-layout)
+3. 可视化组件图片生成使用html2canvas
+4. 可视化组件视频生成使用的是canvas转视频和recordRTC
+5. 可视化组件gif生成使用的是gif.js和gif.worker.js
 
 
-## 需求文档
-https://lanhuapp.com/web/#/item/project/product?tid=6e196da7-466e-4745-b560-a46f0c54a41a&teamId=6e196da7-466e-4745-b560-a46f0c54a41a&pid=9a88f6e3-79d0-4e67-9ab9-8d0c26f04b3d&project_id=9a88f6e3-79d0-4e67-9ab9-8d0c26f04b3d&image_id=639e15ba-e89a-43af-a2a9-1f39fd85413a&docId=639e15ba-e89a-43af-a2a9-1f39fd85413a&docType=axure&type=share_mark&tab=product&userId=45859669-cf3e-4f1a-b1fa-3b2e90e9d4d1&param=2464b2fa-a28b-444f-bc46-e11507c344ea&versionId=e57be002-5644-4858-a83a-6767e794df4b&pageId=e1c1ad63228340179a5ec34d92a3d8e6&parentId=eb1748c9fa21466db0c4a5d808064e5f
 
-## 蓝湖设计稿 后端
-https://lanhuapp.com/web/#/item/project/stage?tid=6e196da7-466e-4745-b560-a46f0c54a41a&pid=79f6592d-37cf-4e70-afc2-4ab0b22f7d30
+##### 关于使用dengta-components的坑：
 
-## 蓝湖设计稿 app端
-https://lanhuapp.com/web/#/item/project/stage?type=share_mark&pid=bf6ff199-c432-4980-877d-5726a3b95a2f&teamId=6e196da7-466e-4745-b560-a46f0c54a41a
+- 自定义组件标签绑定有两种方式：
 
-## 后台接口文档
-https://tanzhiw.com/master_material/swagger-ui.html#/%E4%BA%92%E5%8A%A8%E8%A7%86%E9%A2%91%E7%B4%A0%E6%9D%90%E5%BA%93api/signUpInfoCreateUsingPOST
+​		第一种是脱离文档，将自定义的组件绑定到shadow root中，与文档隔离，互相不受影响
+
+​		第二种是不脱离文当，将自定义的组件绑定到文档流中
+
+ 		<!--第一种方式的优点在于互相隔离，但是因为是脱离了文档，因此无法被html2canvas选中渲染，由于需要将可视化组件转化为图片、视频、gif，因此选择的是第一种方式。-->
+
+- 自定义组件事件
+
+  ​	监听事件：
+
+  ​		通过window上绑定的事件监听方法监听，例如addEventListener
+
+  ​	发送事件：
+
+  ​		除了dom事件外，还可以自定义事件，通过new CustomEvent的方式创建自定义事件，通过dispatchEvent触发自定义事件。
+
+- 创建dom组件
+
+  ​	目前是通过js的方式创建，希望可以找到一种像html或者template一样直接写dom的方式
+
+##### 关于权限
+
+​	目前只有角色权限的区分
+
+​	功能通过自定义指令v-auth的方式，控制相关元素页面的显示隐藏
+
+##### 关于element
+
+​	为降低打包后的体积，通过按需引入的方式加载相关组件
+
+
+
+##### api_document文件说明
+
+​	接口参数说明文档
+
+##### docker文件说明
+
+​	上传腾讯云docker包配置
+

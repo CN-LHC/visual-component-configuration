@@ -40,35 +40,25 @@ body {
   font-family: "微软雅黑", "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial;
   font-size: 14px;
   // background-color: #16181A;
-  color: #252525;
+  background-color: #222A36;
+  color: #fff;
 }
-.user_info_popper {
-  background: #282828 !important;
-  color: #fff !important;
-  border-color: #282828 !important;
-  padding: 0 !important;
+.configuration-component-poper {
+  // background-color: red !important;
+  .el-popconfirm__action {
+    margin: 4px 16px 0 0;
+    .el-button--text {
+      color: #3BD5B3;
+      &:hover {
+        color: #20C6A1;
+      }
+    }
+    .el-button--primary {
+      background: #3BD5B3;
+      border-color: #3BD5B3;
+      &:hover {
+        background: #20C6A1;
+      }
+    }
+  }
 }
-.user_info_popper[x-placement^=bottom] .popper__arrow::after {
-  border-bottom-color: #282828 !important;
-}
-.user_info_popper[x-placement^=bottom] .popper__arrow {
-  border-bottom-color: #282828 !important;
-}
-
-.preview_popover {
-  background: #2D313B !important;
-  color: #fff !important;
-  border-color: #2D313B !important;
-  padding: 8px !important;
-}
-.preview_popover[x-placement^=right] .popper__arrow::after {
-  border-right-color: #2D313B !important;
-}
-.preview_popover[x-placement^=right] .popper__arrow {
-  border-right-color: #2D313B !important;
-}
-
-.record_url_popper {
-  padding: 0 !important;
-}
-

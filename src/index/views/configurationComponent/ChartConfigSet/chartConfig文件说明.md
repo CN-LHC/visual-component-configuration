@@ -1,0 +1,10 @@
+通过访问.vue文件可以发现，文件主要接收两个参数chartConfig、dataSource和一个方法getChartConfig
+
+
+
+chartConfig表示的是默认配置项
+
+dataSource表示的是默认数据
+
+getChartConfig表示的是.vue中$data发生改变是要执行的方法，配置项抛出
+

@@ -1,4 +1,11 @@
-<!-- 外层 -->
+/*
+ * @Author: liuhanchuan 
+ * @Date: 2023-02-22 18:20:39 
+ * @Last Modified by: liuhanchuan
+ * @Last Modified time: 2023-02-23 15:29:34
+ * 通用布局
+ */
+
 <template>
   <div class="layout-wrapper">
     <keep-alive>
@@ -16,17 +23,17 @@ export default {
   components: {
     Header,
   },
-  methods: {},
+  created() {}
 };
 </script>
 
 <style lang="less" scoped>
 .layout-wrapper {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   .body {
     width: 100%;
-    height: calc(100% - 60px);
+    height: calc(100% - 80px);
   }
 }
 </style>

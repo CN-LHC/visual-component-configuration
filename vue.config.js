@@ -1,5 +1,5 @@
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const MonacoEditorWebpackPlugin = require("monaco-editor-webpack-plugin")
+// const MonacoEditorWebpackPlugin = require("monaco-editor-webpack-plugin")
 const path = require("path");
 
 // Generate pages object
@@ -15,8 +15,6 @@ pages.forEach((name) => {
   };
 });
 
-console.log("pagesObj", pagesObj);
-
 let plugins = [
   new CopyWebpackPlugin([
     {
@@ -24,7 +22,7 @@ let plugins = [
       to: `${path.resolve("dist")}/assets`,
     },
   ]),
-  new MonacoEditorWebpackPlugin()
+  // new MonacoEditorWebpackPlugin()
 ];
 
 // const publicPath = process.env.NODE_ENV === "production" ? "/h5" : "/";
